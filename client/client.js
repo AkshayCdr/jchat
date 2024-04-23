@@ -23,6 +23,7 @@ socket.on("user-connected", () => {});
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   const message = new FormData(form).get("message");
+  appendMessage(`You : ${message}`);
   socket.emit("chat-message", message);
   form.reset();
 });
