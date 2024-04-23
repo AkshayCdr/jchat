@@ -9,15 +9,18 @@
         import { io } from "https://cdn.socket.io/4.7.5/socket.io.esm.min.js";
       </script> -->
     <script defer  type="module" src="client.js"></script>
+    <link rel="stylesheet" href="style.css">
 
 </head>
 <body>
-    <div class="message-container">
+    <div class="chat-container">
+        <ul class="message-container">
 
+        </ul>
+        <form action="" class="message-form">
+            <input type="text" name="message" class="message-input">
+            <button type="submit" name="submit" class="btn-submit">submit</button>
+        </form>
     </div>
-    <form action="" >
-        <input type="text" name="message" id="">
-        <button type="submit" name="submit"></button>
-    </form>
 </body>
 </html>

@@ -1,0 +1,33 @@
+:root{
+    --height: 2rem;
+    --border-radius:12px;
+}
+
+.chat-container{
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    width: fit-content;
+    margin: 20px auto;
+}
+
+.message-container{
+
+}
+
+.message-form{
+    
+}
+
+.message-input{
+    height: var(--height);
+    width: 14rem;
+    border-radius: var(--border-radius);
+}
+
+.btn-submit{
+    height: var(--height);
+    width: 4rem;
+    font-size: medium;
+    border-radius: var(--border-radius);
+}
