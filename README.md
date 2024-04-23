@@ -1,4 +1,4 @@
 # jchat
 
-node js -
-websocket -
+chat-app using websocket
+**socket.io**
