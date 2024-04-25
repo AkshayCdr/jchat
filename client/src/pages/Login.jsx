@@ -4,6 +4,8 @@ import Button from "../components/Button";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
+import "./Login.css";
+
 import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
 
 const socket = io("http://localhost:3000");
@@ -21,10 +23,9 @@ export default function Login() {
   }
 
   return (
-    <div>
+    <div className="login-container">
       <Input
         placeholder="Username"
-        q
         onChange={(e) => setUsername(e.target.value)}
       />
       <Input

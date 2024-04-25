@@ -1,6 +1,8 @@
 import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
 import { useState, useEffect } from "react";
 
+import "./Profile.css";
+
 const socket = io("http://localhost:3000");
 // import { useHistory } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -17,13 +19,12 @@ export default function Profile() {
     const updateUsers = users.filter(
       (user) => user.userId !== location.state.username
     );
-    console.log(updateUsers);
     setUsers(updateUsers);
   });
 
   const handleUserClick = (user) => {
     // Navigate to /chat with user.id as a parameter
-    socket.emit("join", { email: "user1@example.com" });
+    // socket.emit("join", { email: "user1@example.com" });
 
     navigate("/chat", {
       state: {
@@ -37,6 +38,7 @@ export default function Profile() {
   return (
     <div>
       <div className="users">
+        <h1>Active users</h1>
         <ul>
           {users.map((user, index) => (
             <li onClick={() => handleUserClick(user)} key={index}>

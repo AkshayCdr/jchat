@@ -1,0 +1,14 @@
+.users{
+    display: flex;
+    flex-direction: column;
+    background-color: aquamarine;
+    width: 300px;
+    border-radius: 10px;
+    gap: 20px;
+    padding: 20px;
+    margin: 40px auto;
+}
+
+li{
+    border-bottom: 1px solid black;
+}
