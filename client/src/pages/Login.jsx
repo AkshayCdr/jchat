@@ -17,7 +17,7 @@ export default function Login() {
     if (!userName || !password) return;
     e.preventDefault();
     socket.emit("new-user", userName);
-    navigate("/chat", { replace: true });
+    navigate("/profile", { state: { username: userName } }, { replace: true });
   }
 
   return (
