@@ -2,10 +2,21 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from "cors";
-
+import session from "express-session";
+import { posthandler } from "./controller/posthandler.js";
+import bodyParser from "body-parser";
 const app = express();
 
 app.use(cors());
+app.use(bodyParser.json());
+
+app.use(
+  session({
+    secret: "this is key",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -13,6 +24,8 @@ const io = new Server(httpServer, {
     origin: "*",
   },
 });
+
+app.post("/login", posthandler);
 
 let users = [];
 
@@ -44,9 +57,11 @@ io.on("connection", (socket) => {
     // console.log(user.socketId);
     // console.log(message);
     // if (user) io.to(user.socketId).emit("receive-message", message);
+    if (user)
+      io.to(user.socketId).emit("receive-message", [{ username, message }]);
     // io.sockets.in("user1@example.com").emit("receive-message", message);
     // io.emit("receive-message", [username + ":" + message]);
-    io.emit("receive-message", [{ username, message }]);
+    // io.emit("receive-message", [{ username, message }]);
   });
   // socket.on("chat-message", (message) => {
   //   console.log(message);

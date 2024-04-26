@@ -1,6 +1,6 @@
 import "./Input.css";
 
-export default function Input({ onChange, placeholder }) {
+export default function Input({ value, onChange, placeholder }) {
   return (
     <input
       className="input-textbox"
@@ -9,6 +9,7 @@ export default function Input({ onChange, placeholder }) {
       id=""
       onChange={onChange}
       placeholder={placeholder}
+      value={value}
     />
   );
 }
