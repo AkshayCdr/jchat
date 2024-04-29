@@ -37,7 +37,8 @@ io.on("connection", (socket) => {
         socketId: socket.id,
       });
     // console.log(users);
-    io.emit("get-users", users);
+    // io.emit("get-users", users);
+    socket.broadcast.emit("get-users", users);
 
     // const targetSocket = io.sockets.sockets.get(socket.id); // Get the socket object by ID
     // if (targetSocket) {
