@@ -5,10 +5,11 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 import "./Login.css";
+import socket from "../socket";
 
-import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
+// import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
 
-const socket = io("http://localhost:3000");
+// const socket = io("http://localhost:3000");
 
 export default function Login() {
   const [userName, setUsername] = useState("");

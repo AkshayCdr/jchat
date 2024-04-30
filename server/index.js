@@ -37,8 +37,8 @@ io.on("connection", (socket) => {
         socketId: socket.id,
       });
     // console.log(users);
-    // io.emit("get-users", users);
-    socket.broadcast.emit("get-users", users);
+    io.emit("get-users", users);
+    // socket.broadcast.emit("get-users", users);
 
     // const targetSocket = io.sockets.sockets.get(socket.id); // Get the socket object by ID
     // if (targetSocket) {
@@ -80,20 +80,32 @@ io.on("connection", (socket) => {
     // console.log(user.socketId);
     // console.log(message);
     // if (user) io.to(user.socketId).emit("receive-message", message);
-    // if (user)
-    //   io.to(user.socketId).emit("receive-message", [{ username, message }]);
+    if (user)
+      io.to(user.socketId).emit("receive-message", [{ username, message }]);
 
     // io.sockets.in("user1@example.com").emit("receive-message", message);
 
-    io.emit("receive-message", [{ username, message }]);
+    // io.emit("receive-message", [{ username, message }]);
   });
   // socket.on("chat-message", (message) => {
   //   console.log(message);
   //   socket.broadcast.emit("message", { name: users[socket.id], message });
   // });
 
+  socket.on("join-Room", (roomName) => {
+    console.log(roomName);
+    socket.join(roomName);
+  });
+
+  socket.on("send-message-room", (data) => {
+    console.log(data);
+    io.to(data.roomName).emit("receive-message-room", [data]);
+    // io.emit("receive-message-room", [data]);
+  });
+
   socket.on("disconnect", () => {
-    users = users.filter((user) => user.socketId !== socket.id);
+    // users = users.filter((user) => user.socketId !== socket.id);
+    socket.broadcast.emit("get-users", users);
     // console.log("disoneected", users);
     io.emit("get-users", users);
   });

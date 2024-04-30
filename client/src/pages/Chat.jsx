@@ -6,9 +6,10 @@ import { useLocation } from "react-router-dom";
 
 import "./Chat.css";
 
-import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
+import socket from "../socket";
+// import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
 
-const socket = io("http://localhost:3000");
+// const socket = io("http://localhost:3000");
 
 export default function Chat() {
   const [message, setMessage] = useState("");

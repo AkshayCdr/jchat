@@ -7,6 +7,10 @@ const users = [
     username: "b",
     password: "b",
   },
+  {
+    username: "c",
+    password: "c",
+  },
 ];
 
 export function posthandler(req, res) {

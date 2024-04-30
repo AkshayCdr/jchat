@@ -1,15 +1,18 @@
-import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
-import { useState, useEffect } from "react";
+// import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
+import { useState } from "react";
 
 import "./Profile.css";
 
-const socket = io("http://localhost:3000");
+import socket from "../socket";
+// const socket = io("http://localhost:3000");
 // import { useHistory } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
 export default function Profile() {
   const [users, setUsers] = useState([]);
+
+  const [roomName, setRoomName] = useState("");
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -20,6 +23,7 @@ export default function Profile() {
       (user) => user.userId !== location.state.username
     );
     setUsers(updateUsers);
+    // setUsers(users);
   });
 
   const handleUserClick = (user) => {
@@ -35,6 +39,17 @@ export default function Profile() {
     });
   };
 
+  function joinRoom(e) {
+    e.preventDefault();
+    console.log("clicked");
+    socket.emit("join-Room", roomName);
+    navigate("/room", {
+      state: {
+        roomName: roomName,
+      },
+    });
+  }
+
   return (
     <div>
       <div className="users">
@@ -46,6 +61,14 @@ export default function Profile() {
             </li>
           ))}
         </ul>
+
+        <input
+          type="text"
+          onChange={(e) => setRoomName(e.target.value)}
+          name="roomName"
+          placeholder=" Enter Room Name"
+        />
+        <button onClick={joinRoom}>Join Room</button>
       </div>
     </div>
   );
