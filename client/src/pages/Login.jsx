@@ -7,15 +7,15 @@ import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import socket from "../socket";
 
-export default function Login() {
-  const [userName, setUsername] = useState("");
+export default function Login({ userName, setUsername, setIsClicked }) {
   const [password, setPassword] = useState("");
+
   const navigate = useNavigate();
 
   async function handleClick(e) {
     if (!userName || !password) return;
     e.preventDefault();
-    const response = await fetch("http://localhost:3000/login", {
+    const response = await fetch("http://localhost:5500/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -30,6 +30,7 @@ export default function Login() {
     //if the user exist then sign in
     socket.emit("new-user", userName);
     if (response.ok) {
+      setIsClicked(true);
       navigate(
         "/profile",
         { state: { username: userName } }
