@@ -2,15 +2,13 @@ import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Input from "../components/Input";
 import Button from "../components/Button";
-// import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
-
-// const socket = io("http://localhost:3000");
-
 import socket from "../socket";
+import { useNavigate } from "react-router-dom";
 
 export default function Room() {
   const [message, setMessage] = useState("");
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [receiveMessage, setReceive] = useState([]);
 
@@ -28,8 +26,18 @@ export default function Room() {
     });
   }
 
+  function returnBack(e) {
+    e.preventDefault();
+    navigate(
+      "/profile",
+      { state: { username: location.state.username } }
+      // { replace: true }
+    );
+  }
+
   return (
     <div>
+      <button onClick={returnBack}>go Back</button>
       <h1>{location.state.roomName}</h1>
       <ul>
         {receiveMessage.map((data, index) => (

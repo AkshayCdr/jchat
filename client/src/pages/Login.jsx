@@ -7,10 +7,6 @@ import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import socket from "../socket";
 
-// import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
-
-// const socket = io("http://localhost:3000");
-
 export default function Login() {
   const [userName, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -36,8 +32,8 @@ export default function Login() {
     if (response.ok) {
       navigate(
         "/profile",
-        { state: { username: userName } },
-        { replace: true }
+        { state: { username: userName } }
+        // { replace: true }
       );
     } else {
       alert("invalid username and password");

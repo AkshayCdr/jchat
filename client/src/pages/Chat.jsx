@@ -1,29 +1,16 @@
 import { useState, useEffect } from "react";
 import Button from "../components/Button";
 import Input from "../components/Input";
-
 import { useLocation } from "react-router-dom";
-
 import "./Chat.css";
-
 import socket from "../socket";
-// import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
-
-// const socket = io("http://localhost:3000");
+import { useNavigate } from "react-router-dom";
 
 export default function Chat() {
   const [message, setMessage] = useState("");
   const location = useLocation();
-
-  // useEffect(() => {
-  //   // socket.emit("join", {
-  //   //   username: location.state.username,
-  //   //   senderName: location.state.senderName,
-  //   // });
-  //   socket.emit("join", { email: "user1@example.com" });
-  // });
-
   const [receiveMessage, setReceive] = useState([]);
+  const navigate = useNavigate();
 
   socket.on("receive-message", (data) => {
     console.log(data);
@@ -40,10 +27,20 @@ export default function Chat() {
     });
   }
 
+  function returnBack(e) {
+    e.preventDefault();
+    navigate(
+      "/profile",
+      { state: { username: location.state.username } }
+      // { replace: true }
+    );
+  }
+
   return (
     <div className="chat-container">
       <h1>{location.state.senderName}</h1>
       <div className="chat-box">
+        <button onClick={returnBack}>go back</button>
         {receiveMessage.map((data, index) => (
           <li key={index}>
             {(data.username === location.state.username

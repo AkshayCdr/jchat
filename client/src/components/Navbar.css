@@ -1,0 +1,26 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.navbar{
+    background-color: darkblue;
+}
+
+.navbar ul{
+    display: flex;
+    flex-direction: row;
+    /* background-color: bisque; */
+    gap: 20px;
+    margin: 5px 5px;
+    padding: 5px 5px;
+    justify-content: flex-end;
+    /* list-style-type: disc; */
+    list-style-type: none;
+    font-size: 30px;
+}
+
+.navbar ul li{
+    
+}

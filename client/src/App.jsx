@@ -6,10 +6,12 @@ import Login from "./pages/Login";
 import Room from "./pages/Room";
 import Profile from "./pages/Profile";
 import Chat from "./pages/Chat";
+import Navbar from "./components/Navbar";
 
 function App() {
   return (
     <BrowserRouter>
+      <Navbar />
       <Routes>
         <Route path="/" exact Component={Login} />
         <Route path="/chat/" Component={Chat} />

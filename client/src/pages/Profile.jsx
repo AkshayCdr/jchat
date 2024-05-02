@@ -1,35 +1,50 @@
-// import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 import "./Profile.css";
-
 import socket from "../socket";
-// const socket = io("http://localhost:3000");
-// import { useHistory } from "react-router-dom";
+
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
 export default function Profile() {
-  const [users, setUsers] = useState([]);
+  const location = useLocation();
+  const [users, setUsers] = useState(() =>
+    localStorage.getItem("users")
+      ? JSON.parse(localStorage.getItem("users")).filter(
+          (user) => user.userId !== location.state.username
+        )
+      : []
+  );
+
+  const [rooms, setRooms] = useState(() =>
+    localStorage.getItem("rooms")
+      ? JSON.parse(localStorage.getItem("rooms"))
+      : []
+  );
 
   const [roomName, setRoomName] = useState("");
   const navigate = useNavigate();
 
-  const location = useLocation();
+  useEffect(() => {
+    socket.on("get-users", (users) => {
+      console.log(users);
+      const updateUsers = users.filter(
+        (user) => user.userId !== location.state.username
+      );
+      console.log(updateUsers);
+      setUsers(updateUsers);
+      localStorage.setItem("users", JSON.stringify(users));
+    });
+  }, []);
 
-  socket.on("get-users", (users) => {
-    console.log(users);
-    const updateUsers = users.filter(
-      (user) => user.userId !== location.state.username
-    );
-    setUsers(updateUsers);
-    // setUsers(users);
-  });
+  useEffect(() => {
+    socket.on("available-rooms", (data) => {
+      console.log(data);
+      setRooms(data);
+      localStorage.setItem("rooms", JSON.stringify(data));
+    });
+  }, []);
 
   const handleUserClick = (user) => {
-    // Navigate to /chat with user.id as a parameter
-    // socket.emit("join", { email: "user1@example.com" });
-
     navigate("/chat", {
       state: {
         id: 1,
@@ -45,6 +60,7 @@ export default function Profile() {
     socket.emit("join-Room", roomName);
     navigate("/room", {
       state: {
+        username: location.state.username,
         roomName: roomName,
       },
     });
@@ -59,6 +75,13 @@ export default function Profile() {
             <li onClick={() => handleUserClick(user)} key={index}>
               {user.userId}
             </li>
+          ))}
+        </ul>
+
+        <h1>Active Rooms</h1>
+        <ul>
+          {rooms.map((room, index) => (
+            <li key={index}>{room.roomName}</li>
           ))}
         </ul>
 
