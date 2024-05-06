@@ -9,9 +9,22 @@ import { useNavigate } from "react-router-dom";
 export default function Chat({ username }) {
   const [message, setMessage] = useState("");
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [receiveMessage, setReceive] = useState([]);
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log(location.state);
+    async function getMessages() {
+      const response = await fetch(
+        `http://localhost:5500/chat/${location.state.userId}/${location.state.senderId}`
+      );
+      if (!response.ok) return;
+      const messages = await response.json();
+      if (messages) setReceive(messages);
+    }
+    getMessages();
+  }, []);
 
   socket.on("receive-message", (data) => {
     console.log(data);
@@ -24,8 +37,24 @@ export default function Chat({ username }) {
     socket.emit("send-message", {
       username: username,
       message,
-      user: location.state.senderName,
+      userToSend: location.state.senderName,
     });
+
+    async function sendMessage() {
+      const response = await fetch(
+        `http://localhost:5500/chat/${location.state.userId}/${location.state.senderId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message: message }),
+        }
+      );
+      if (!response.ok) return;
+      console.log("sending success.");
+    }
+    sendMessage();
   }
 
   function returnBack(e) {
@@ -39,16 +68,17 @@ export default function Chat({ username }) {
       <div className="chat-box">
         <button onClick={returnBack}>go back</button>
         {receiveMessage.map((data, index) => (
-          <li key={index}>
-            {(data.username === username ? "you" : data.username) +
-              " " +
-              data.message}
-          </li>
+          <div key={index} className="chat-item">
+            <li>{data.username}</li>
+            <li>{data.message}</li>
+            <li>{new Date(data.timestamp).toLocaleTimeString()}</li>
+          </div>
         ))}
       </div>
       <div className="input">
-        <Input
-          placeholder="Type somethig...."
+        <input
+          type="text"
+          placeholder="Type something..."
           onChange={(e) => setMessage(e.target.value)}
         />
         <Button onClick={onClick} name="send" />

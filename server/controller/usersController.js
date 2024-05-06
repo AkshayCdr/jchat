@@ -5,5 +5,9 @@ import { getUsers } from "../model/login.js";
 //   res.send(JSON.stringify(users));
 // }
 
-export const userHandler = async (req, res) =>
-  res.send(JSON.stringify(await getUsers()));
+export const userHandler = async (req, res) => {
+  // if (req.user) {
+  return res.send(JSON.stringify(await getUsers()));
+  // }
+  // res.status(401).json({ message: "user authentication failed" });
+};

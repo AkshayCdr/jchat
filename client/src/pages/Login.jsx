@@ -31,7 +31,7 @@ export default function Login({ userName, setUsername, setIsClicked }) {
     //if the user exist then sign in
     socket.emit("new-user", userName);
     if (response.ok) {
-      setIsClicked(true);
+      // setIsClicked(true);
       navigate("/profile");
     } else {
       alert("invalid username and password");
@@ -43,12 +43,12 @@ export default function Login({ userName, setUsername, setIsClicked }) {
   return (
     <div className="login-container">
       <Input
-        value={userName}
+        // value={userName}
         placeholder="Username"
         onChange={(e) => setUsername(e.target.value)}
       />
       <Input
-        value={password}
+        // value={password}
         placeholder="Password"
         onChange={(e) => setPassword(e.target.value)}
       />

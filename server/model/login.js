@@ -14,6 +14,21 @@ export async function getUsers() {
   }
 }
 
+export async function getUsersUsingId(id) {
+  const client = await getClient();
+  try {
+    await client.connect();
+    const query = `SELECT * FROM USERS WHERE id = $1`;
+    const values = [id];
+    const data = await client.query(query, values);
+    return data.rows[0];
+  } catch (err) {
+    console.error(err.message);
+  } finally {
+    await endClient(client);
+  }
+}
+
 export async function addSessionData(data) {
   const client = await getClient();
   try {
@@ -37,6 +52,27 @@ export async function getSession() {
     const query = `SELECT * FROM SESSIONS`;
     const data = await client.query(query);
     return data.rows;
+  } catch (err) {
+    console.error(err.message);
+  } finally {
+    await endClient(client);
+  }
+}
+
+export async function getUserUsingSid(sessionId) {
+  const client = await getClient();
+  try {
+    await client.connect();
+    const query = `SELECT user_id FROM SESSIONS WHERE session_id = $1`;
+    const values = [sessionId];
+    const data = await client.query(query, values);
+    return data.rows;
+    // return data ? data : null;
+    // if (data.rows.length > 0) {
+    //   return data.rows[0].user_id;
+    // } else {
+    //   return null;
+    // }
   } catch (err) {
     console.error(err.message);
   } finally {

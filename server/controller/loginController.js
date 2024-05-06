@@ -15,6 +15,12 @@ export async function loginHandler(req, res) {
 
   const users = await getUsers();
   const user = users.find((user) => user.username === req.body.userName);
+
+  if (!user) {
+    res.status(401).json({ message: "username doesn't exist" });
+    return;
+  }
+
   const passwordMatch = bcrypt.compare(req.body.password, user.password);
 
   if (!passwordMatch) {

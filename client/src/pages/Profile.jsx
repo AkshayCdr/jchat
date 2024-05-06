@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./Profile.css";
 import socket from "../socket";
 
@@ -8,16 +8,33 @@ import { useLocation } from "react-router-dom";
 export default function Profile({ username }) {
   const location = useLocation();
 
+  const [currentUser, setCurrentUser] = useState(null);
+
   const [availableUsers, setAvailableUsers] = useState([]);
+  const navigate = useNavigate();
 
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:5500/users");
+        const response = await fetch("http://localhost:5500/users", {
+          method: "GET",
+          credentials: "include",
+        });
+        if (!response.ok) navigate("/");
         const userData = await response.json();
-        setUsers(userData);
+        if (userData) {
+          setCurrentUser(
+            userData.filter((user) => user.username === username)[0]
+          );
+          const usersWithoutUsername = userData.filter(
+            (user) => user.username !== username
+          );
+          setUsers(usersWithoutUsername);
+        } else {
+          setUsers([]);
+        }
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -26,32 +43,31 @@ export default function Profile({ username }) {
     fetchUsers();
   }, []);
 
-  const [rooms, setRooms] = useState(() =>
-    localStorage.getItem("rooms")
-      ? JSON.parse(localStorage.getItem("rooms"))
-      : []
-  );
+  // const [rooms, setRooms] = useState(() =>
+  //   localStorage.getItem("rooms")
+  //     ? JSON.parse(localStorage.getItem("rooms"))
+  //     : []
+  // );
 
-  const [roomName, setRoomName] = useState("");
-  const navigate = useNavigate();
+  // const [roomName, setRoomName] = useState("");
 
-  useEffect(() => {
-    socket.on("get-users", (users) => {
-      console.log(users);
-      const updateUsers = users.filter((user) => user.userId !== username);
-      console.log(updateUsers);
-      setAvailableUsers(updateUsers);
-      localStorage.setItem("users", JSON.stringify(users));
-    });
-  }, []);
+  // useEffect(() => {
+  //   socket.on("get-users", (users) => {
+  //     console.log(users);
+  //     const updateUsers = users.filter((user) => user.userId !== username);
+  //     console.log(updateUsers);
+  //     setAvailableUsers(updateUsers);
+  //     localStorage.setItem("users", JSON.stringify(users));
+  //   });
+  // }, []);
 
-  useEffect(() => {
-    socket.on("available-rooms", (data) => {
-      console.log(data);
-      setRooms(data);
-      localStorage.setItem("rooms", JSON.stringify(data));
-    });
-  }, []);
+  // useEffect(() => {
+  //   socket.on("available-rooms", (data) => {
+  //     console.log(data);
+  //     setRooms(data);
+  //     localStorage.setItem("rooms", JSON.stringify(data));
+  //   });
+  // }, []);
 
   // const handleUserClick = (user) => {
   //   navigate("/chat", {
@@ -64,22 +80,23 @@ export default function Profile({ username }) {
   const handleUserClick = (user) => {
     navigate("/chat", {
       state: {
-        id: 1,
-        senderName: user.userId,
+        userId: currentUser.id,
+        senderId: user.id,
+        senderName: user.username,
       },
     });
   };
 
-  function joinRoom(e) {
-    e.preventDefault();
-    console.log("clicked");
-    socket.emit("join-Room", roomName);
-    navigate("/room", {
-      state: {
-        roomName: roomName,
-      },
-    });
-  }
+  // function joinRoom(e) {
+  //   e.preventDefault();
+  //   console.log("clicked");
+  //   socket.emit("join-Room", roomName);
+  //   navigate("/room", {
+  //     state: {
+  //       roomName: roomName,
+  //     },
+  //   });
+  // }
 
   return (
     <div>
@@ -103,7 +120,7 @@ export default function Profile({ username }) {
           ))}
         </ul> */}
 
-        <h1>Active Rooms</h1>
+        {/* <h1>Active Rooms</h1>
         <ul>
           {rooms.map((room, index) => (
             <li key={index}>{room.roomName}</li>
@@ -116,7 +133,7 @@ export default function Profile({ username }) {
           name="roomName"
           placeholder=" Enter Room Name"
         />
-        <button onClick={joinRoom}>Join Room</button>
+        <button onClick={joinRoom}>Join Room</button> */}
       </div>
     </div>
   );
