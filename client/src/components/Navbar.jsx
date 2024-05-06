@@ -1,18 +1,27 @@
 import "./Navbar.css";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-export default function Navbar({ username, isClicked }) {
-  function logout() {
+export default function Navbar({
+  username,
+  setUsername,
+  setIsClicked,
+  isClicked,
+}) {
+  const navigate = useNavigate();
+  async function logout() {
     console.log("loggin out....");
     //redirect to logout
-    const response = fetch("http://localhost:5500/logout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+    const response = await fetch("http://localhost:5500/logout", {
+      method: "GET",
       credentials: "include",
-      body: JSON.stringify({ username: username }),
     });
+    console.log(response);
+    if (response.ok) {
+      setUsername("");
+      setIsClicked(true);
+      navigate("/");
+    }
   }
   if (username && isClicked) {
     return (

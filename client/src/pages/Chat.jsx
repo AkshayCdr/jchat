@@ -6,9 +6,10 @@ import "./Chat.css";
 import socket from "../socket";
 import { useNavigate } from "react-router-dom";
 
-export default function Chat() {
+export default function Chat({ username }) {
   const [message, setMessage] = useState("");
   const location = useLocation();
+
   const [receiveMessage, setReceive] = useState([]);
   const navigate = useNavigate();
 
@@ -21,7 +22,7 @@ export default function Chat() {
     e.preventDefault();
     if (!message) return;
     socket.emit("send-message", {
-      username: location.state.username,
+      username: username,
       message,
       user: location.state.senderName,
     });
@@ -29,11 +30,7 @@ export default function Chat() {
 
   function returnBack(e) {
     e.preventDefault();
-    navigate(
-      "/profile",
-      { state: { username: location.state.username } }
-      // { replace: true }
-    );
+    navigate("/profile");
   }
 
   return (
@@ -43,9 +40,7 @@ export default function Chat() {
         <button onClick={returnBack}>go back</button>
         {receiveMessage.map((data, index) => (
           <li key={index}>
-            {(data.username === location.state.username
-              ? "you"
-              : data.username) +
+            {(data.username === username ? "you" : data.username) +
               " " +
               data.message}
           </li>

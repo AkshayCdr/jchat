@@ -29,3 +29,32 @@ export async function addSessionData(data) {
     await endClient(client);
   }
 }
+
+export async function getSession() {
+  const client = await getClient();
+  try {
+    await client.connect();
+    const query = `SELECT * FROM SESSIONS`;
+    const data = await client.query(query);
+    return data.rows;
+  } catch (err) {
+    console.error(err.message);
+  } finally {
+    await endClient(client);
+  }
+}
+
+export async function deleteSessionId(id) {
+  const client = await getClient();
+  try {
+    await client.connect();
+    const query = `DELETE FROM SESSIONS WHERE id = $1`;
+    const values = [id];
+    const result = await client.query(query, values);
+    console.log(`${result.rowCount} session(s) deleted for user with ID ${id}`);
+  } catch (err) {
+    console.error(err.message);
+  } finally {
+    await endClient(client);
+  }
+}

@@ -5,7 +5,7 @@ import Button from "../components/Button";
 import socket from "../socket";
 import { useNavigate } from "react-router-dom";
 
-export default function Room() {
+export default function Room({ username }) {
   const [message, setMessage] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
@@ -28,11 +28,7 @@ export default function Room() {
 
   function returnBack(e) {
     e.preventDefault();
-    navigate(
-      "/profile",
-      { state: { username: location.state.username } }
-      // { replace: true }
-    );
+    navigate("/profile");
   }
 
   return (

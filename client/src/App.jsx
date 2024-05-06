@@ -13,14 +13,13 @@ function App() {
   const [isClicked, setIsClicked] = useState(false);
   return (
     <BrowserRouter>
-      <Navbar username={userName} isClicked={isClicked} />
+      <Navbar
+        username={userName}
+        setUsername={setUsername}
+        setIsClicked={setIsClicked}
+        isClicked={isClicked}
+      />
       <Routes>
-        {/* <Route path="/" exact Component={Login} /> */}
-        {/* <Route
-          path="/"
-          exact
-          render={() => <Login userName={userName} setUsername={setUsername} />}
-        /> */}
         <Route
           path="/"
           exact
@@ -33,9 +32,9 @@ function App() {
           }
         />
 
-        <Route path="/chat/" Component={Chat} />
-        <Route path="/profile" Component={Profile} />
-        <Route path="/room" Component={Room} />
+        <Route path="/chat" element={<Chat username={userName} />} />
+        <Route path="/profile" element={<Profile username={userName} />} />
+        <Route path="/room" element={<Profile username={userName} />} />
       </Routes>
     </BrowserRouter>
   );

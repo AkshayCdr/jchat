@@ -24,6 +24,7 @@ export default function Login({ userName, setUsername, setIsClicked }) {
         userName,
         password,
       }),
+      credentials: "include",
     });
     //check for new user
     console.log(response);
@@ -31,11 +32,7 @@ export default function Login({ userName, setUsername, setIsClicked }) {
     socket.emit("new-user", userName);
     if (response.ok) {
       setIsClicked(true);
-      navigate(
-        "/profile",
-        { state: { username: userName } }
-        // { replace: true }
-      );
+      navigate("/profile");
     } else {
       alert("invalid username and password");
       setUsername("");

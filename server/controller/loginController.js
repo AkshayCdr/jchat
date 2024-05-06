@@ -1,5 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
-import { getUsers, addSessionData } from "../model/login.js";
+import {
+  getUsers,
+  addSessionData,
+  getSession,
+  deleteSessionId,
+} from "../model/login.js";
 import bcrypt from "bcrypt";
 
 export async function loginHandler(req, res) {
@@ -13,7 +18,7 @@ export async function loginHandler(req, res) {
   const passwordMatch = bcrypt.compare(req.body.password, user.password);
 
   if (!passwordMatch) {
-    res.status(404).json({ message: "invalid password" });
+    res.status(401).json({ message: "invalid password" });
     return;
   }
 
@@ -22,21 +27,28 @@ export async function loginHandler(req, res) {
 
   res
     .cookie("sessionId", generatedSessionId, {
-      secure: true,
+      // secure: true,
       httpOnly: true,
       // signed: true,
-      sameSite: "none",
-      path: "/",
-      withCredentials: true,
+      // sameSite: "none",
+      // path: "/",
+      // withCredentials: true,
     })
     .send(`Authorized as user ${req.body.username}`);
 }
 
 export async function logoutHandler(req, res) {
-  // Cookies that have not been signed
-  console.log(req.cookies.sessionId);
+  const sessions = await getSession();
+  console.log(sessions);
+  const session = sessions.find(
+    (session) => session.session_id === req.cookies.sessionId
+  );
 
-  // Cookies that have been signed
-  console.log(req.signedCookies);
-  res.send(200);
+  console.log(session);
+
+  console.log(session.id);
+
+  await deleteSessionId(session.id);
+
+  res.clearCookie("sessionId").send("cookie cleared");
 }
