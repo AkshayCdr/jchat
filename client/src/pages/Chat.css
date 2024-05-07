@@ -10,9 +10,50 @@
 
 .chat-box{
     min-height: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-box li{
+    list-style: none;
+}
+
+.chat-message-container{
+    background-color: aqua;
+    border: 1px solid black;
+    border-radius: 10px;
+    margin: 5px;
+    padding: 2px;
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    height: fit-content;
+    gap: 3px;
+}
+
+.chat-username{
+    font-size: .7rem;
+    color: darkviolet;
+    font-weight: 700;
+}
+
+.chat-message{
+    font-size: 1.1rem;
+}
+
+.chat-time{
+    font-size: .7rem;
+    margin-left: auto;
+    color: grey;
+}
+
+.float-right{
+    margin-left: auto;
 }
 
 .input{
     display: flex;
     align-items: flex-end;
+    
 }
+

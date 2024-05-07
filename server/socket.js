@@ -45,7 +45,7 @@ io.on("connection", (socket) => {
       io.to(sender.socketId)
         .to(user.socketId)
         .emit("receive-message", [
-          { username, message, timestamp: new Date() },
+          { sender_username: username, message, timestamp: new Date() },
         ]);
   });
 

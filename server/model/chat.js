@@ -29,3 +29,34 @@ export async function addChatMessage(sender_id, receiver_id, message) {
     await endClient(client);
   }
 }
+
+export async function getChatMessagesWithUsernames(senderId, receiverId) {
+  const client = await getClient();
+  try {
+    await client.connect();
+    const query = `
+        SELECT
+          c.id AS chat_id,
+          s.username AS sender_username,
+          r.username AS receiver_username,
+          c.message,
+          c.timestamp
+        FROM
+          CHATS c
+        INNER JOIN
+          USERS s ON c.sender_id = s.id
+        INNER JOIN
+          USERS r ON c.receiver_id = r.id
+          WHERE (c.sender_id = $1 AND c.receiver_id = $2) OR (c.sender_id = $2 AND c.receiver_id = $1)`;
+    const values = [senderId, receiverId];
+    const data = await client.query(query, values);
+    return data.rows;
+  } catch (error) {
+    console.error(
+      "Error fetching chat messages with usernames:",
+      error.message
+    );
+  } finally {
+    await endClient(client);
+  }
+}

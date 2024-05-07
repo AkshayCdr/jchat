@@ -39,7 +39,6 @@ export default function Chat({ username }) {
       message,
       userToSend: location.state.senderName,
     });
-
     async function sendMessage() {
       const response = await fetch(
         `http://localhost:5500/chat/${location.state.userId}/${location.state.senderId}`,
@@ -68,10 +67,17 @@ export default function Chat({ username }) {
       <div className="chat-box">
         <button onClick={returnBack}>go back</button>
         {receiveMessage.map((data, index) => (
-          <div key={index} className="chat-item">
-            <li>{data.username}</li>
-            <li>{data.message}</li>
-            <li>{new Date(data.timestamp).toLocaleTimeString()}</li>
+          <div
+            key={index}
+            className={`chat-message-container ${
+              data.sender_username === username ? "float-right" : ""
+            }`}
+          >
+            <li className="chat-username">{data.sender_username}</li>
+            <li className="chat-message">{data.message}</li>
+            <li className="chat-time">
+              {new Date(data.timestamp).toLocaleTimeString()}
+            </li>
           </div>
         ))}
       </div>
