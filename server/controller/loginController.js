@@ -4,6 +4,7 @@ import {
   addSessionData,
   getSession,
   deleteSessionId,
+  deleteSession,
 } from "../model/login.js";
 import bcrypt from "bcrypt";
 
@@ -35,13 +36,7 @@ export async function loginHandler(req, res) {
 
     res
       .cookie("sessionId", generatedSessionId, {
-        // signed: true,
-        // secure: true,
-        // httpOnly: true,
-        // signed: true,
         same_site: "none",
-        // path: "/",
-        // withCredentials: true,
       })
       .send(`Authorized as user ${req.body.username}`);
   } catch (error) {
@@ -51,19 +46,14 @@ export async function loginHandler(req, res) {
 
 export async function logoutHandler(req, res) {
   try {
-    const sessions = await getSession();
-    console.log(sessions);
-    const session = sessions.find(
-      (session) => session.session_id === req.cookies.sessionId
-    );
+    if (req.body) {
+      const { sessionId } = req.cookies.sessionId;
 
-    console.log(session);
-
-    console.log(session.id);
-
-    await deleteSessionId(session.id);
-
-    res.clearCookie("sessionId").send("cookie cleared");
+      if (sessionId) {
+        await deleteSession();
+      } else return res.status(401).json({ message: "No session header" });
+      res.clearCookie("sessionId").send("cookie cleared");
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

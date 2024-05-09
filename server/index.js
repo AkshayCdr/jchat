@@ -57,7 +57,7 @@ async function validateSession(req, res, next) {
 // validateSession,
 
 app.post("/login", loginHandler);
-app.get("/logout", logoutHandler);
+app.get("/logout", validateSession, logoutHandler);
 
 app.get("/users", validateSession, userHandler);
 app.get("/chat/:senderId/:receiverId", validateSession, getMessage);

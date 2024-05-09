@@ -64,6 +64,21 @@ export async function getUserUsingSid(sessionId) {
   }
 }
 
+export async function deleteSession(sessionId) {
+  const client = await getClient();
+  try {
+    await client.connect();
+    const query = `DELETE FROM SESSIONS WHERE session_id = $1`;
+    const values = [sessionId];
+    const result = await client.query(query, values);
+    console.log(
+      `${result.rowCount} session(s) deleted for user with ID ${sessionId}`
+    );
+  } finally {
+    await endClient(client);
+  }
+}
+
 export async function deleteSessionId(id) {
   const client = await getClient();
   try {

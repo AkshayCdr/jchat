@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
 import { serialize, parse } from "cookie";
 
+import { getUsersUsingId } from "./model/login.js";
+
 const httpServer = createServer();
 
 const io = new Server(httpServer, {
@@ -32,10 +34,10 @@ const rooms = [];
 
 io.on("connection", (socket) => {
   console.log("connected");
-  // console.log(socket.handshake.headers);
 
   socket.on("new-user", (data) => {
-    // if (!data.sessionId) io.close();
+    if (!data.sessionId) io.close();
+    console.log(data.sessionId);
     if (!users.some((user) => user.Id === data.username))
       users.push({
         username: data.username,
