@@ -64,6 +64,31 @@ export async function getUserUsingSid(sessionId) {
   }
 }
 
+export async function getUserInfoBySession(sessionId) {
+  const client = await getClient();
+  try {
+    await client.connect();
+    const query = `
+      SELECT u.id AS user_id, u.username
+      FROM sessions s
+      INNER JOIN users u ON s.user_id = u.id
+      WHERE s.session_id = $1
+    `;
+    const result = await client.query(query, [sessionId]);
+
+    if (result.rows.length === 1) {
+      return result.rows[0];
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error getting user info by session:", error.message);
+    throw error;
+  } finally {
+    await endClient(client);
+  }
+}
+
 export async function deleteSession(sessionId) {
   const client = await getClient();
   try {

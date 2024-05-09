@@ -4,14 +4,27 @@ import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
 import { serialize, parse } from "cookie";
 
-import { getUsersUsingId } from "./model/login.js";
+import { getUserInfoBySession } from "./model/login.js";
 
 const httpServer = createServer();
 
-const io = new Server(httpServer, {
-  cors: {
-    origin: "*",
+const whitelist = ["http://localhost:5173", "http://192.168.0.111:5173"];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || whitelist.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
   },
+  sameSite: "none",
+  credentials: true,
+};
+
+const io = new Server(httpServer, {
+  cookie: true,
+  cors: corsOptions,
 });
 
 // const io = new Server(httpServer, {
@@ -32,12 +45,32 @@ let users = [];
 
 const rooms = [];
 
+io.use(async (socket, next) => {
+  if (socket.request.headers.cookie) {
+    const { sessionId } = parseCookie(socket.request.headers.cookie);
+    const user = await getUserInfoBySession(sessionId);
+    if (user) {
+      socket.user = user;
+      return next();
+    }
+  }
+  next(new Error("authenrication error"));
+});
+
+const parseCookie = (str) =>
+  str
+    .split(";")
+    .map((v) => v.split("="))
+    .reduce((acc, v) => {
+      acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(v[1].trim());
+      return acc;
+    }, {});
+
 io.on("connection", (socket) => {
   console.log("connected");
 
   socket.on("new-user", (data) => {
-    if (!data.sessionId) io.close();
-    console.log(data.sessionId);
+    console.log(socket.user);
     if (!users.some((user) => user.Id === data.username))
       users.push({
         username: data.username,
