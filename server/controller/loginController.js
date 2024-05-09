@@ -39,7 +39,7 @@ export async function loginHandler(req, res) {
         // secure: true,
         // httpOnly: true,
         // signed: true,
-        sameSite: "none",
+        same_site: "none",
         // path: "/",
         // withCredentials: true,
       })

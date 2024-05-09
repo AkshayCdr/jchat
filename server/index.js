@@ -29,6 +29,7 @@ const corsOptions = {
       callback(new Error("Not allowed by CORS"));
     }
   },
+  sameSite: "none",
   credentials: true,
 };
 
@@ -44,22 +45,22 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-// async function validateSession(req, res, next) {
-//   if (!(req.cookies && req.cookies.sessionId)) return next();
-//   const user = await getUserUsingSid(req.cookies.sessionId);
-//   console.log(user.user_id);
-//   req.user = user.user_id ? await getUsersUsingId(user.user_id) : null;
-//   console.log(req.user);
-//   return next();
-// }
+async function validateSession(req, res, next) {
+  if (!(req.cookies && req.cookies.sessionId)) return next();
+  const user = await getUserUsingSid(req.cookies.sessionId);
+  console.log(user.user_id);
+  req.user = user.user_id ? await getUsersUsingId(user.user_id) : null;
+  console.log(req.user);
+  return next();
+}
 
 // validateSession,
 
 app.post("/login", loginHandler);
 app.get("/logout", logoutHandler);
 
-app.get("/users", userHandler);
-app.get("/chat/:senderId/:receiverId", getMessage);
-app.post("/chat/:senderId/:receiverId", addMessage);
+app.get("/users", validateSession, userHandler);
+app.get("/chat/:senderId/:receiverId", validateSession, getMessage);
+app.post("/chat/:senderId/:receiverId", validateSession, addMessage);
 
 app.listen(5500, () => console.log("listening to 5500"));
