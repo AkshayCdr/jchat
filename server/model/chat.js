@@ -8,8 +8,6 @@ export async function getChatMessagesBetweenUsers(user1_id, user2_id) {
     const values = [user1_id, user2_id];
     const data = await client.query(query, values);
     return data.rows;
-  } catch (error) {
-    console.error("Error fetching chat messages:", error.message);
   } finally {
     await endClient(client);
   }
@@ -23,8 +21,6 @@ export async function addChatMessage(sender_id, receiver_id, message) {
     const values = [sender_id, receiver_id, message];
     await client.query(query, values);
     console.log("Chat message added successfully");
-  } catch (error) {
-    console.error("Error adding chat message:", error.message);
   } finally {
     await endClient(client);
   }
@@ -51,11 +47,6 @@ export async function getChatMessagesWithUsernames(senderId, receiverId) {
     const values = [senderId, receiverId];
     const data = await client.query(query, values);
     return data.rows;
-  } catch (error) {
-    console.error(
-      "Error fetching chat messages with usernames:",
-      error.message
-    );
   } finally {
     await endClient(client);
   }

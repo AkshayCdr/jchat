@@ -9,42 +9,57 @@ import { getMessage, addMessage } from "./controller/chatController.js";
 import { getUserUsingSid, getUsersUsingId } from "./model/login.js";
 
 const app = express();
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
+
+// http://localhost:5173
+
+// app.use(
+//   cors({
+//     origin: "http://localhost:5173",
+//     credentials: true,
+//   })
+// );
+
+const whitelist = ["http://localhost:5173", "http://192.168.0.111:5173"];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || whitelist.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
+// app.use(
+//   cors({
+//     origin: "http://192.168.0.111:5173",
+//     credentials: true,
+//   })
+// );
+
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-// app.use((req, res, next) => {
-//   if (req.cookies.sessionId) {
-//     const userId = getUserUsingSid(req.cookies.sessionId);
-//     req.user = userId ? getUsersUsingId(userId) : null;
-//     next();
-//   }
-//   res.status(401).json({ message: "no session id " });
-// });
-
 // async function validateSession(req, res, next) {
-//   if (req.cookies.sessionId) {
-//     const userId = await getUserUsingSid(req.cookies.sessionId);
-
-//     req.user = userId ? await getUsersUsingId(userId[0].user_id) : null;
-//     console.log(req.user);
-//     next();
-//   }
-//   return res.status(401).json({ message: "no session id " });
+//   if (!(req.cookies && req.cookies.sessionId)) return next();
+//   const user = await getUserUsingSid(req.cookies.sessionId);
+//   console.log(user.user_id);
+//   req.user = user.user_id ? await getUsersUsingId(user.user_id) : null;
+//   console.log(req.user);
+//   return next();
 // }
+
+// validateSession,
 
 app.post("/login", loginHandler);
 app.get("/logout", logoutHandler);
+
 app.get("/users", userHandler);
 app.get("/chat/:senderId/:receiverId", getMessage);
 app.post("/chat/:senderId/:receiverId", addMessage);
-//  /chat/user:id/second-user:id
-
-// app.get("/users", getUsers);
 
 app.listen(5500, () => console.log("listening to 5500"));

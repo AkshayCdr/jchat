@@ -7,24 +7,11 @@ import { serialize, parse } from "cookie";
 const httpServer = createServer();
 
 const io = new Server(httpServer, {
+  cookie: true,
   cors: {
     origin: "*",
   },
 });
-
-// const io = new Server(httpServer, {
-//   cookie: true,
-//   cors: {
-//     origin: "http://192.168.0.111:5173",
-//   },
-// });
-
-// const io = new Server(httpServer, {
-//   cookie: true,
-//   cors: {
-//     origin: "http://localhost:5173",
-//   },
-// });
 
 let users = [];
 
@@ -34,11 +21,10 @@ io.on("connection", (socket) => {
   console.log("connected");
   // console.log(socket.handshake.headers);
 
-  socket.on("new-user", (data) => {
-    // if (!data.sessionId) io.close();
-    if (!users.some((user) => user.Id === data.username))
+  socket.on("new-user", (userName) => {
+    if (!users.some((user) => user.Id === userName))
       users.push({
-        username: data.username,
+        username: userName,
         socketId: socket.id,
       });
 

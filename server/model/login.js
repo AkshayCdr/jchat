@@ -7,8 +7,6 @@ export async function getUsers() {
     const query = `SELECT * FROM USERS`;
     const data = await client.query(query);
     return data.rows;
-  } catch (err) {
-    console.error(err.message);
   } finally {
     await endClient(client);
   }
@@ -22,8 +20,6 @@ export async function getUsersUsingId(id) {
     const values = [id];
     const data = await client.query(query, values);
     return data.rows[0];
-  } catch (err) {
-    console.error(err.message);
   } finally {
     await endClient(client);
   }
@@ -38,8 +34,6 @@ export async function addSessionData(data) {
     const values = [data.sessionId, data.userId];
     await client.query(query, values);
     console.log("session data added");
-  } catch (err) {
-    console.error(err.message);
   } finally {
     await endClient(client);
   }
@@ -52,8 +46,6 @@ export async function getSession() {
     const query = `SELECT * FROM SESSIONS`;
     const data = await client.query(query);
     return data.rows;
-  } catch (err) {
-    console.error(err.message);
   } finally {
     await endClient(client);
   }
@@ -66,15 +58,7 @@ export async function getUserUsingSid(sessionId) {
     const query = `SELECT user_id FROM SESSIONS WHERE session_id = $1`;
     const values = [sessionId];
     const data = await client.query(query, values);
-    return data.rows;
-    // return data ? data : null;
-    // if (data.rows.length > 0) {
-    //   return data.rows[0].user_id;
-    // } else {
-    //   return null;
-    // }
-  } catch (err) {
-    console.error(err.message);
+    return data.rows[0];
   } finally {
     await endClient(client);
   }
@@ -88,8 +72,6 @@ export async function deleteSessionId(id) {
     const values = [id];
     const result = await client.query(query, values);
     console.log(`${result.rowCount} session(s) deleted for user with ID ${id}`);
-  } catch (err) {
-    console.error(err.message);
   } finally {
     await endClient(client);
   }
