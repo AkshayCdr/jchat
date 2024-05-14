@@ -48,9 +48,9 @@ app.use(cookieParser());
 async function validateSession(req, res, next) {
   if (!(req.cookies && req.cookies.sessionId)) return next();
   const user = await getUserUsingSid(req.cookies.sessionId);
-  console.log(user.user_id);
+  // console.log(user.user_id);
   req.user = user.user_id ? await getUsersUsingId(user.user_id) : null;
-  console.log(req.user);
+  // console.log(req.user);
   return next();
 }
 

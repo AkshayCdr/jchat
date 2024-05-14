@@ -2,9 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
   getUsers,
   addSessionData,
-  getSession,
-  deleteSessionId,
-  deleteSession,
+  deleteSessionUsingUserId,
 } from "../model/login.js";
 import bcrypt from "bcrypt";
 
@@ -46,14 +44,11 @@ export async function loginHandler(req, res) {
 
 export async function logoutHandler(req, res) {
   try {
-    if (req.body) {
-      const { sessionId } = req.cookies.sessionId;
-
-      if (sessionId) {
-        await deleteSession();
-      } else return res.status(401).json({ message: "No session header" });
-      res.clearCookie("sessionId").send("cookie cleared");
+    if (req.user) {
+      await deleteSessionUsingUserId(req.user.id);
+      return res.clearCookie("sessionId").send("cookie cleared");
     }
+    return res.status(401).json({ message: "Authentication error" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

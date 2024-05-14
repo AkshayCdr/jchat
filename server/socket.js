@@ -55,29 +55,40 @@ const parseCookie = (str) =>
 io.on("connection", (socket) => {
   console.log("connected");
 
-  socket.on("new-user", (data) => {
-    // console.log(socket.user);
-    if (!users.some((user) => user.Id === data.username))
-      users.push({
-        username: data.username,
-        socketId: socket.id,
-      });
+  if (!socket.user) {
+    console.log("User authentication failed");
+    socket.disconnect();
+    return;
+  }
 
-    io.emit("get-users", users);
+  socket.on("new-user", (data) => {
+    console.log(socket.user);
+    if (socket.user) {
+      if (!users.some((user) => user.Id === data.username))
+        users.push({
+          username: data.username,
+          socketId: socket.id,
+        });
+
+      io.emit("get-users", users);
+    }
   });
 
   socket.on("send-message", (data) => {
-    const { username, message, userToSend } = data;
-    console.log(users);
-    const user = users.find((user) => user.username === username);
-    const sender = users.find((user) => user.username === userToSend);
+    console.log(socket.user);
+    if (socket.user) {
+      const { username, message, userToSend } = data;
+      console.log(users);
+      const user = users.find((user) => user.username === username);
+      const sender = users.find((user) => user.username === userToSend);
 
-    if (userToSend && user)
-      io.to(sender.socketId)
-        .to(user.socketId)
-        .emit("receive-message", [
-          { sender_username: username, message, timestamp: new Date() },
-        ]);
+      if (userToSend && user)
+        io.to(sender.socketId)
+          .to(user.socketId)
+          .emit("receive-message", [
+            { sender_username: username, message, timestamp: new Date() },
+          ]);
+    }
   });
 
   // socket.on("join-Room", (roomName) => {

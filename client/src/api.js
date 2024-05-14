@@ -13,6 +13,12 @@ export const loginApi = async (userName, password) =>
     credentials: "include",
   });
 
+export const logoutApi = async () =>
+  fetch(addr + ":5500/logout", {
+    method: "GET",
+    credentials: "include",
+  });
+
 export const getUsersApi = async () =>
   fetch(addr + ":5500/users", {
     method: "GET",
