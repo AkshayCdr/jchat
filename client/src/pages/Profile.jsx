@@ -3,13 +3,29 @@ import "./Profile.css";
 
 import { useNavigate } from "react-router-dom";
 
-import { getUsersApi } from "../api.js";
+import { getUsersApi, getRoomsApi } from "../api.js";
 
 export default function Profile({ username }) {
   //to get details of current user
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
+
+  const [rooms, setRooms] = useState([]);
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const response = await getRoomsApi();
+        if (!response.ok) return navigate("/");
+        const data = await response.json();
+        setRooms(data);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchRooms();
+  }, []);
 
   const getCurrentUserDetails = (userData) =>
     userData.filter((user) => user.username === username)[0];
@@ -83,6 +99,10 @@ export default function Profile({ username }) {
     });
   };
 
+  const handleRoomClick = (user) => {
+    navigate("/room", {});
+  };
+
   // function joinRoom(e) {
   //   e.preventDefault();
   //   console.log("clicked");
@@ -120,6 +140,16 @@ export default function Profile({ username }) {
           placeholder=" Enter Room Name"
         />
         <button onClick={joinRoom}>Join Room</button> */}
+        <div className="rooms">
+          <h1>Rooms</h1>
+          <ul>
+            {rooms.map((room) => (
+              <li onClick={handleRoomClick} key={room.id}>
+                {room.room_name}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

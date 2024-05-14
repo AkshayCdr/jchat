@@ -7,17 +7,9 @@ import { userHandler } from "./controller/usersController.js";
 import { getMessage, addMessage } from "./controller/chatController.js";
 
 import { getUserUsingSid, getUsersUsingId } from "./model/login.js";
+import { getRooms } from "./controller/roomController.js";
 
 const app = express();
-
-// http://localhost:5173
-
-// app.use(
-//   cors({
-//     origin: "http://localhost:5173",
-//     credentials: true,
-//   })
-// );
 
 const whitelist = ["http://localhost:5173", "http://192.168.0.111:5173"];
 
@@ -34,27 +26,19 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-// app.use(
-//   cors({
-//     origin: "http://192.168.0.111:5173",
-//     credentials: true,
-//   })
-// );
-
 app.use(bodyParser.json());
 app.use(cookieParser());
 
 async function validateSession(req, res, next) {
   if (!(req.cookies && req.cookies.sessionId)) return next();
   const user = await getUserUsingSid(req.cookies.sessionId);
-  // console.log(user.user_id);
+  if (!user) {
+    req.user = null;
+    return next();
+  }
   req.user = user.user_id ? await getUsersUsingId(user.user_id) : null;
-  // console.log(req.user);
   return next();
 }
-
-// validateSession,
 
 app.post("/login", loginHandler);
 app.get("/logout", validateSession, logoutHandler);
@@ -62,5 +46,7 @@ app.get("/logout", validateSession, logoutHandler);
 app.get("/users", validateSession, userHandler);
 app.get("/chat/:senderId/:receiverId", validateSession, getMessage);
 app.post("/chat/:senderId/:receiverId", validateSession, addMessage);
+
+app.get("/room", validateSession, getRooms);
 
 app.listen(5500, () => console.log("listening to 5500"));

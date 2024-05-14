@@ -39,3 +39,9 @@ export const sendMessageApi = async (userId, senderId, message) =>
     credentials: "include",
     body: JSON.stringify({ message: message }),
   });
+
+export const getRoomsApi = async () =>
+  fetch(addr + `:5500/room`, {
+    method: "GET",
+    credentials: "include",
+  });
