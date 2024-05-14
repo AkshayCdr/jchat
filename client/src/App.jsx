@@ -10,14 +10,14 @@ import Navbar from "./components/Navbar";
 
 function App() {
   const [userName, setUsername] = useState("");
-  // const [isClicked, setIsClicked] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
   return (
     <BrowserRouter>
       <Navbar
         username={userName}
         setUsername={setUsername}
-        // setIsClicked={setIsClicked}
-        // isClicked={isClicked}
+        setIsClicked={setIsClicked}
+        isClicked={isClicked}
       />
       <Routes>
         <Route
@@ -27,7 +27,7 @@ function App() {
             <Login
               userName={userName}
               setUsername={setUsername}
-              // setIsClicked={setIsClicked}
+              setIsClicked={setIsClicked}
             />
           }
         />

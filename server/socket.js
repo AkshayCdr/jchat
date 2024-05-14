@@ -27,20 +27,6 @@ const io = new Server(httpServer, {
   cors: corsOptions,
 });
 
-// const io = new Server(httpServer, {
-//   cookie: true,
-//   cors: {
-//     origin: "http://192.168.0.111:5173",
-//   },
-// });
-
-// const io = new Server(httpServer, {
-//   cookie: true,
-//   cors: {
-//     origin: "http://localhost:5173",
-//   },
-// });
-
 let users = [];
 
 const rooms = [];
@@ -70,7 +56,7 @@ io.on("connection", (socket) => {
   console.log("connected");
 
   socket.on("new-user", (data) => {
-    console.log(socket.user);
+    // console.log(socket.user);
     if (!users.some((user) => user.Id === data.username))
       users.push({
         username: data.username,
@@ -81,21 +67,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send-message", (data) => {
-    // const message = data.message;
-    // const username = data.username;
-    // const userNameToSend = data.user;
-    console.log(data);
-    console.log(users);
     const { username, message, userToSend } = data;
-    console.log(username);
-    console.log(message);
-    console.log(userToSend);
-
+    console.log(users);
     const user = users.find((user) => user.username === username);
     const sender = users.find((user) => user.username === userToSend);
-
-    console.log(user);
-    console.log(sender);
 
     if (userToSend && user)
       io.to(sender.socketId)

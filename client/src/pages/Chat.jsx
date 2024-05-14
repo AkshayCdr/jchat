@@ -6,23 +6,31 @@ import "./Chat.css";
 import socket from "../socket";
 import { useNavigate } from "react-router-dom";
 
+import { getMessagesApi, sendMessageApi } from "../api";
+
 export default function Chat({ username }) {
   const [message, setMessage] = useState("");
+
   const location = useLocation();
   const navigate = useNavigate();
 
   const [receiveMessage, setReceive] = useState([]);
 
   useEffect(() => {
-    console.log(location.state);
+    if (!location.state || !location.state.userId || !location.state.senderId) {
+      return navigate("/");
+    }
+
     async function getMessages() {
-      const response = await fetch(
-        `http://localhost:5500/chat/${location.state.userId}/${location.state.senderId}`
+      const response = await getMessagesApi(
+        location.state.userId,
+        location.state.senderId
       );
-      if (!response.ok) return;
+      if (!response.ok) navigate("/");
       const messages = await response.json();
       if (messages) setReceive(messages);
     }
+
     getMessages();
   }, []);
 
@@ -34,23 +42,21 @@ export default function Chat({ username }) {
   function onClick(e) {
     e.preventDefault();
     if (!message) return;
+
     socket.emit("send-message", {
       username: username,
       message,
       userToSend: location.state.senderName,
     });
+
     async function sendMessage() {
-      const response = await fetch(
-        `http://localhost:5500/chat/${location.state.userId}/${location.state.senderId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ message: message }),
-        }
+      const response = await sendMessageApi(
+        location.state.userId,
+        location.state.senderId,
+        message
       );
-      if (!response.ok) return;
+      if (!response.ok) return navigate("/");
+
       console.log("sending success.");
     }
     sendMessage();
@@ -63,9 +69,11 @@ export default function Chat({ username }) {
 
   return (
     <div className="chat-container">
-      <h1>{location.state.senderName}</h1>
+      <h1>{location.state && location.state.senderName}</h1>
+      <button onClick={returnBack} className="go-back">
+        go back
+      </button>
       <div className="chat-box">
-        <button onClick={returnBack}>go back</button>
         {receiveMessage.map((data, index) => (
           <div
             key={index}
@@ -82,10 +90,10 @@ export default function Chat({ username }) {
         ))}
       </div>
       <div className="input">
-        <input
-          type="text"
-          placeholder="Type something..."
+        <Input
+          value={message}
           onChange={(e) => setMessage(e.target.value)}
+          placeholder="type somethign"
         />
         <Button onClick={onClick} name="send" />
       </div>

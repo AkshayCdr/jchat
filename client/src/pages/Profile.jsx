@@ -1,37 +1,33 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import "./Profile.css";
-import socket from "../socket";
 
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+
+import { getUsersApi } from "../api.js";
 
 export default function Profile({ username }) {
-  const location = useLocation();
-
+  //to get details of current user
   const [currentUser, setCurrentUser] = useState(null);
-
-  const [availableUsers, setAvailableUsers] = useState([]);
   const navigate = useNavigate();
-
   const [users, setUsers] = useState([]);
+
+  const getCurrentUserDetails = (userData) =>
+    userData.filter((user) => user.username === username)[0];
+
+  const filterCurrentUserName = (userData) =>
+    userData.filter((user) => user.username !== username);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:5500/users", {
-          method: "GET",
-          credentials: "include",
-        });
-        if (!response.ok) navigate("/");
+        const response = await getUsersApi();
+        if (!response.ok) return navigate("/");
         const userData = await response.json();
+
         if (userData) {
-          setCurrentUser(
-            userData.filter((user) => user.username === username)[0]
-          );
-          const usersWithoutUsername = userData.filter(
-            (user) => user.username !== username
-          );
-          setUsers(usersWithoutUsername);
+          //get get Current user details - @id
+          setCurrentUser(getCurrentUserDetails(userData));
+          setUsers(filterCurrentUserName(userData));
         } else {
           setUsers([]);
         }
@@ -109,16 +105,6 @@ export default function Profile({ username }) {
             </li>
           ))}
         </ul>
-
-        {/* 
-        <h1>Active users</h1>
-        <ul>
-          {availableUsers.map((user, index) => (
-            <li onClick={() => handleUserClick(user)} key={index}>
-              {user.userId}
-            </li>
-          ))}
-        </ul> */}
 
         {/* <h1>Active Rooms</h1>
         <ul>

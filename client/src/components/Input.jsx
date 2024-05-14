@@ -7,8 +7,8 @@ export default function Input({ value, onChange, placeholder }) {
       type="text"
       name="input"
       id=""
-      // onChange={onChange}
-      onBlur={onChange}
+      onChange={onChange}
+      // onBlur={onChange}
       placeholder={placeholder}
       value={value}
     />

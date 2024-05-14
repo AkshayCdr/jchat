@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 export default function Navbar({
   username,
   setUsername,
-  // setIsClicked,
-  // isClicked,
+  setIsClicked,
+  isClicked,
 }) {
   const navigate = useNavigate();
   async function logout() {
@@ -19,11 +19,11 @@ export default function Navbar({
     console.log(response);
     if (response.ok) {
       setUsername("");
-      // setIsClicked(true);
+      setIsClicked(true);
       navigate("/");
     }
   }
-  if (username) {
+  if (username && isClicked) {
     return (
       <nav className="navbar">
         <ul>
