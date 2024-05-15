@@ -7,6 +7,7 @@ import Room from "./pages/Room";
 import Profile from "./pages/Profile";
 import Chat from "./pages/Chat";
 import Navbar from "./components/Navbar";
+import SelectUsers from "./pages/SelectUsers";
 
 function App() {
   const [userName, setUsername] = useState("");
@@ -34,7 +35,8 @@ function App() {
 
         <Route path="/chat" element={<Chat username={userName} />} />
         <Route path="/profile" element={<Profile username={userName} />} />
-        <Route path="/room" element={<Profile username={userName} />} />
+        <Route path="/room" element={<Room />} />
+        <Route path="/selectUsers" element={<SelectUsers />}></Route>
       </Routes>
     </BrowserRouter>
   );

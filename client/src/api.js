@@ -45,3 +45,13 @@ export const getRoomsApi = async () =>
     method: "GET",
     credentials: "include",
   });
+
+export const addRoomApi = async (roomName, selectedUsers) =>
+  fetch(addr + `:5500/room`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ roomName, selectedUsers }),
+  });

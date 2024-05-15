@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./Profile.css";
 
 import { useNavigate } from "react-router-dom";
@@ -99,9 +99,28 @@ export default function Profile({ username }) {
     });
   };
 
-  const handleRoomClick = (user) => {
-    navigate("/room", {});
+  const handleRoomClick = (room) => {
+    console.log(room);
+    navigate("/room", {
+      state: {
+        roomId: room.id,
+        roomName: room.room_name,
+      },
+    });
   };
+
+  const addRoomRef = useRef(null);
+
+  function addRoom() {
+    const roomName = addRoomRef.current.value;
+    navigate("/selectUsers", {
+      state: {
+        userId: currentUser.id,
+        roomName,
+        users,
+      },
+    });
+  }
 
   // function joinRoom(e) {
   //   e.preventDefault();
@@ -144,11 +163,13 @@ export default function Profile({ username }) {
           <h1>Rooms</h1>
           <ul>
             {rooms.map((room) => (
-              <li onClick={handleRoomClick} key={room.id}>
+              <li onClick={() => handleRoomClick(room)} key={room.id}>
                 {room.room_name}
               </li>
             ))}
           </ul>
+          <input type="text" ref={addRoomRef} placeholder="Add room..." />
+          <button onClick={addRoom}>Add Room +</button>
         </div>
       </div>
     </div>
