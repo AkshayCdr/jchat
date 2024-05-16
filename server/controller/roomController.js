@@ -32,7 +32,8 @@ export async function getRoomById(req, res) {
 }
 
 export async function setRoom(req, res) {
-  const { roomName, selectedUsers } = req.body;
+  const { roomName } = req.params;
+  const { selectedUsers } = req.body;
   try {
     const roomId = await addRooms(roomName);
     console.log(roomId);

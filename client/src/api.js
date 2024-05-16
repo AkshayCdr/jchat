@@ -1,7 +1,7 @@
 import { addr } from "../address.js/";
 
 export const loginApi = async (userName, password) =>
-  fetch(addr + ":5500/login", {
+  fetch(addr + ":5500/users/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -14,7 +14,7 @@ export const loginApi = async (userName, password) =>
   });
 
 export const logoutApi = async () =>
-  fetch(addr + ":5500/logout", {
+  fetch(addr + ":5500/users/logout", {
     method: "GET",
     credentials: "include",
   });
@@ -26,12 +26,12 @@ export const getUsersApi = async () =>
   });
 
 export const getMessagesApi = async (userId, senderId) =>
-  fetch(addr + `:5500/chat/${userId}/${senderId}`, {
+  fetch(addr + `:5500/chats/${userId}/${senderId}`, {
     credentials: "include",
   });
 
 export const sendMessageApi = async (userId, senderId, message) =>
-  fetch(addr + `:5500/chat/${userId}/${senderId}`, {
+  fetch(addr + `:5500/chats/${userId}/${senderId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -47,29 +47,29 @@ export const getRoomsApi = async () =>
   });
 
 export const getRoomsByUserId = async (userId) =>
-  fetch(addr + `:5500/room/${userId}`, {
+  fetch(addr + `:5500/rooms/${userId}`, {
     method: "GET",
     credentials: "include",
   });
 
 export const addRoomApi = async (roomName, selectedUsers) =>
-  fetch(addr + `:5500/room`, {
+  fetch(addr + `:5500/rooms/${roomName}`, {
     method: "POST",
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ roomName, selectedUsers }),
+    body: JSON.stringify({ selectedUsers }),
   });
 
 export const getRoomMessagesApi = async (roomId) =>
-  fetch(addr + `:5500/room/messages/${roomId}`, {
+  fetch(addr + `:5500/rooms/messages/${roomId}`, {
     method: "GET",
     credentials: "include",
   });
 
 export const sendMessageToRoomApi = async (userId, roomId, message) =>
-  fetch(addr + `:5500/room/messages/${roomId}/${userId}`, {
+  fetch(addr + `:5500/rooms/messages/${roomId}/${userId}`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -79,4 +79,4 @@ export const sendMessageToRoomApi = async (userId, roomId, message) =>
   });
 
 export const getRoomMembers = async (roomId) =>
-  fetch(addr + `:5500/room/messages/members/${roomId}`);
+  fetch(addr + `:5500/rooms/messages/members/${roomId}`);

@@ -144,7 +144,6 @@ io.on("connection", (socket) => {
     console.log("inside room");
     const { username, roomName, users: roomMembers, message } = data;
     rooms[roomName] = roomMembers.map((user) => user.username);
-
     rooms[roomName].forEach((roomUsername) => {
       const user = users.find((u) => u.username === roomUsername);
       if (user) {
