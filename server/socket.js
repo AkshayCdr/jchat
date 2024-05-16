@@ -143,7 +143,10 @@ io.on("connection", (socket) => {
   socket.on("send-messageRoom", async (data) => {
     console.log("inside room");
     const { username, roomName, users: roomMembers, message } = data;
-    rooms[roomName] = roomMembers.map((user) => user.username);
+
+    if (!rooms[roomName])
+      rooms[roomName] = roomMembers.map((user) => user.username);
+
     rooms[roomName].forEach((roomUsername) => {
       const user = users.find((u) => u.username === roomUsername);
       if (user) {
@@ -153,6 +156,7 @@ io.on("connection", (socket) => {
         console.log(`User ${roomUsername} not found in users array`);
       }
     });
+
     io.to(roomName).emit("receive-messageRoom", [
       { username, message, timestamp: new Date() },
     ]);

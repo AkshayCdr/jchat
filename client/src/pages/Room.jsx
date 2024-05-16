@@ -49,11 +49,6 @@ export default function Room({ username }) {
 
   const messageRef = useRef(null);
 
-  // socket.on("receive-messageRoom", (data) => {
-  //   console.log(data);
-  //   setMessages([...messages, ...data]);
-  // });
-
   useEffect(() => {
     const handleMessageRoom = (data) => {
       console.log(data);

@@ -46,41 +46,6 @@ export default function Profile({ username }) {
     fetchUsers();
   }, []);
 
-  // const [rooms, setRooms] = useState(() =>
-  //   localStorage.getItem("rooms")
-  //     ? JSON.parse(localStorage.getItem("rooms"))
-  //     : []
-  // );
-
-  // const [roomName, setRoomName] = useState("");
-
-  // useEffect(() => {
-  //   socket.on("get-users", (users) => {
-  //     console.log(users);
-  //     const updateUsers = users.filter((user) => user.userId !== username);
-  //     console.log(updateUsers);
-  //     setAvailableUsers(updateUsers);
-  //     localStorage.setItem("users", JSON.stringify(users));
-  //   });
-  // }, []);
-
-  // useEffect(() => {
-  //   socket.on("available-rooms", (data) => {
-  //     console.log(data);
-  //     setRooms(data);
-  //     localStorage.setItem("rooms", JSON.stringify(data));
-  //   });
-  // }, []);
-
-  // const handleUserClick = (user) => {
-  //   navigate("/chat", {
-  //     state: {
-  //       id: 1,
-  //       senderName: user.userId,
-  //     },
-  //   });
-  // };
-
   const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
@@ -134,55 +99,49 @@ export default function Profile({ username }) {
     });
   }
 
-  // function joinRoom(e) {
-  //   e.preventDefault();
-  //   console.log("clicked");
-  //   socket.emit("join-Room", roomName);
-  //   navigate("/room", {
-  //     state: {
-  //       roomName: roomName,
-  //     },
-  //   });
-  // }
-
   return (
-    <div>
-      <div className="users">
-        <h1>Users</h1>
-        <ul>
-          {users.map((user, index) => (
-            <li onClick={() => handleUserClick(user)} key={index}>
-              {user.username}
-            </li>
-          ))}
-        </ul>
+    <div className="profile">
+      <div className="profile-container">
+        <div className="users">
+          <h1>Users</h1>
+          <ul className="profile-user">
+            {users.map((user, index) => (
+              <li
+                className="profile-username"
+                onClick={() => handleUserClick(user)}
+                key={index}
+              >
+                {user.username}
+              </li>
+            ))}
+          </ul>
+        </div>
 
-        {/* <h1>Active Rooms</h1>
-        <ul>
-          {rooms.map((room, index) => (
-            <li key={index}>{room.roomName}</li>
-          ))}
-        </ul>
-
-        <input
-          type="text"
-          onChange={(e) => setRoomName(e.target.value)}
-          name="roomName"
-          placeholder=" Enter Room Name"
-        />
-        <button onClick={joinRoom}>Join Room</button> */}
         <div className="rooms">
           <h1>Rooms</h1>
           <ul>
             {rooms.map((room) => (
-              <li onClick={() => handleRoomClick(room)} key={room.id}>
+              <li
+                className="profile-classname"
+                onClick={() => handleRoomClick(room)}
+                key={room.id}
+              >
                 {room.room_name}
               </li>
             ))}
           </ul>
-          <input type="text" ref={addRoomRef} placeholder="Add room..." />
-          <button onClick={addRoom}>Add Room +</button>
         </div>
+      </div>
+      <div className="profile-addroom">
+        <input
+          className="addroom-input"
+          type="text"
+          ref={addRoomRef}
+          placeholder="Add room..."
+        />
+        <button className="addroom-btn" onClick={addRoom}>
+          Add Room +
+        </button>
       </div>
     </div>
   );

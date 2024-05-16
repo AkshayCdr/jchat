@@ -20,7 +20,7 @@ export default function Chat({ username }) {
 
   useEffect(() => {
     chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
-  }, [message]);
+  }, [message, receiveMessage]);
 
   useEffect(() => {
     if (!location.state || !location.state.userId || !location.state.senderId) {
@@ -39,11 +39,6 @@ export default function Chat({ username }) {
 
     getMessages();
   }, []);
-
-  // socket.on("receive-message", (data) => {
-  //   console.log(data);
-  //   setReceive([...receiveMessage, ...data]);
-  // });
 
   useEffect(() => {
     const handleMessageRoom = (data) => {
