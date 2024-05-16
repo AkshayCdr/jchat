@@ -6,6 +6,11 @@ import { serialize, parse } from "cookie";
 
 import { getUserInfoBySession } from "./model/login.js";
 
+import {
+  getUserNamesUsingId,
+  getRooms,
+} from "./controller/socketController.js";
+
 const httpServer = createServer();
 
 const whitelist = ["http://localhost:5173", "http://192.168.0.111:5173"];
@@ -29,19 +34,29 @@ const io = new Server(httpServer, {
 
 let users = [];
 
-const rooms = [];
+const rooms = {};
 
-io.use(async (socket, next) => {
-  if (socket.request.headers.cookie) {
-    const { sessionId } = parseCookie(socket.request.headers.cookie);
-    const user = await getUserInfoBySession(sessionId);
-    if (user) {
-      socket.user = user;
-      return next();
-    }
-  }
-  next(new Error("authenrication error"));
-});
+// io.use(async (socket, next) => {
+//   if (socket.request.headers.cookie) {
+//     const { sessionId } = parseCookie(socket.request.headers.cookie);
+//     const user = await getUserInfoBySession(sessionId);
+//     if (user) {
+//       socket.user = user;
+//       return next();
+//     }
+//   }
+//   next(new Error("authenrication error"));
+// });
+
+// io.use(async (socket, next) => {
+//   if (!socket.user) return next(new Error("authentiaction error"));
+//   //get roomnames using user id
+//   console.log(socket.user.user_id);
+//   console.log(socket.user);
+//   const rooms = await getRooms(socket.user.user_id);
+//   console.log(rooms);
+//   return next();
+// });
 
 const parseCookie = (str) =>
   str
@@ -55,68 +70,94 @@ const parseCookie = (str) =>
 io.on("connection", (socket) => {
   console.log("connected");
 
-  if (!socket.user) {
-    console.log("User authentication failed");
-    socket.disconnect();
-    return;
-  }
+  // if (!socket.user) {
+  //   console.log("User authentication failed");
+  //   socket.disconnect();
+  //   return;
+  // }
 
   socket.on("new-user", (data) => {
-    console.log(socket.user);
-    if (socket.user) {
-      if (!users.some((user) => user.Id === data.username))
-        users.push({
-          username: data.username,
-          socketId: socket.id,
-        });
+    // console.log(socket.user);
+    // if (socket.user) {
+    if (!users.some((user) => user.Id === data.username))
+      users.push({
+        username: data.username,
+        socketId: socket.id,
+        socket,
+      });
 
-      io.emit("get-users", users);
-    }
+    io.emit(
+      "get-users",
+      users.map((user) => {
+        return user.username, user.socketId;
+      })
+    );
+    // }
   });
 
   socket.on("send-message", (data) => {
-    console.log(socket.user);
-    if (socket.user) {
-      const { username, message, userToSend } = data;
-      console.log(users);
-      const user = users.find((user) => user.username === username);
-      const sender = users.find((user) => user.username === userToSend);
+    // console.log(socket.user);
+    // if (socket.user) {
+    const { username, message, userToSend } = data;
+    console.log(users);
+    const user = users.find((user) => user.username === username);
+    const sender = users.find((user) => user.username === userToSend);
 
-      if (userToSend && user)
-        io.to(sender.socketId)
-          .to(user.socketId)
-          .emit("receive-message", [
-            { sender_username: username, message, timestamp: new Date() },
-          ]);
-    }
+    if (userToSend && user)
+      io.to(sender.socketId)
+        .to(user.socketId)
+        .emit("receive-message", [
+          { sender_username: username, message, timestamp: new Date() },
+        ]);
+    // }
   });
 
-  // socket.on("join-Room", (roomName) => {
-  //   console.log(roomName);
-  //   socket.join(roomName);
+  socket.on("room-create", async (data) => {
+    //get username from data base
+    const usernames = await getUserNamesUsingId(data.users);
+    console.log(usernames);
 
-  //   if (isRoomExist(rooms, roomName)) {
-  //     const existingRoomIndex = rooms.findIndex(
-  //       (room) => room.roomName === roomName
-  //     );
+    const userInRoom = users.filter((user) =>
+      usernames.some((username) => username.username === user.username)
+    );
 
-  //     console.log(rooms[existingRoomIndex]);
-  //     rooms.forEach((room) => {
-  //       if (room.roomName === roomName) {
-  //         room["roomName"].push(socket.id);
-  //       }
-  //     });
-  //   } else {
-  //     rooms.push({ roomName: [socket.id] });
-  //   }
+    console.log(userInRoom);
 
-  //   io.emit("available-rooms", rooms);
-  // });
+    rooms[data.roomName] = [];
+    usernames.forEach((username) => {
+      rooms[data.roomName].push(username.username);
+    });
+    console.log(rooms);
+    // users.username -> usernames.username
+    //roomname:users
+    //add users to room
 
-  // socket.on("send-message-room", (data) => {
-  //   console.log(data);
-  //   io.to(data.roomName).emit("receive-message-room", [data]);
-  // });
+    if (socket.user) {
+      console.log("authenticatoin workd");
+      return;
+    }
+    console.log("auth not working");
+    return;
+  });
+
+  socket.on("send-messageRoom", async (data) => {
+    console.log("inside room");
+    const { username, roomName, users: roomMembers, message } = data;
+    rooms[roomName] = roomMembers.map((user) => user.username);
+
+    rooms[roomName].forEach((roomUsername) => {
+      const user = users.find((u) => u.username === roomUsername);
+      if (user) {
+        const socket = user.socket;
+        socket.join(roomName);
+      } else {
+        console.log(`User ${roomUsername} not found in users array`);
+      }
+    });
+    io.to(roomName).emit("receive-messageRoom", [
+      { username, message, timestamp: new Date() },
+    ]);
+  });
 
   socket.on("disconnect", () => {
     users = users.filter((user) => user.socketId !== socket.id);

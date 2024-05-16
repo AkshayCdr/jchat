@@ -7,7 +7,14 @@ import { userHandler } from "./controller/usersController.js";
 import { getMessage, addMessage } from "./controller/chatController.js";
 
 import { getUserUsingSid, getUsersUsingId } from "./model/login.js";
-import { getRooms, setRoom } from "./controller/roomController.js";
+import {
+  getRoomById,
+  getRoomMessages,
+  getRooms,
+  setRoom,
+  setRoomMessages,
+  getRoomMembers,
+} from "./controller/roomController.js";
 
 const app = express();
 
@@ -47,7 +54,13 @@ app.get("/users", validateSession, userHandler);
 app.get("/chat/:senderId/:receiverId", validateSession, getMessage);
 app.post("/chat/:senderId/:receiverId", validateSession, addMessage);
 
-app.get("/room", validateSession, getRooms);
+// app.get("/room", validateSession, getRooms);
+app.get("/room/:userId", validateSession, getRoomById);
 app.post("/room", validateSession, setRoom);
+
+app.get("/room/messages/:roomId", validateSession, getRoomMessages);
+app.post("/room/messages/:roomId/:userId", validateSession, setRoomMessages);
+
+app.get("/room/messages/members/:roomId", validateSession, getRoomMembers);
 
 app.listen(5500, () => console.log("listening to 5500"));

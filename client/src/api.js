@@ -46,6 +46,12 @@ export const getRoomsApi = async () =>
     credentials: "include",
   });
 
+export const getRoomsByUserId = async (userId) =>
+  fetch(addr + `:5500/room/${userId}`, {
+    method: "GET",
+    credentials: "include",
+  });
+
 export const addRoomApi = async (roomName, selectedUsers) =>
   fetch(addr + `:5500/room`, {
     method: "POST",
@@ -55,3 +61,22 @@ export const addRoomApi = async (roomName, selectedUsers) =>
     },
     body: JSON.stringify({ roomName, selectedUsers }),
   });
+
+export const getRoomMessagesApi = async (roomId) =>
+  fetch(addr + `:5500/room/messages/${roomId}`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+export const sendMessageToRoomApi = async (userId, roomId, message) =>
+  fetch(addr + `:5500/room/messages/${roomId}/${userId}`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ message }),
+  });
+
+export const getRoomMembers = async (roomId) =>
+  fetch(addr + `:5500/room/messages/members/${roomId}`);

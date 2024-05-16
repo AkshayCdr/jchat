@@ -3,7 +3,7 @@ import "./Profile.css";
 
 import { useNavigate } from "react-router-dom";
 
-import { getUsersApi, getRoomsApi } from "../api.js";
+import { getUsersApi, getRoomsApi, getRoomsByUserId } from "../api.js";
 
 export default function Profile({ username }) {
   //to get details of current user
@@ -11,39 +11,30 @@ export default function Profile({ username }) {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
 
-  const [rooms, setRooms] = useState([]);
-
-  useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const response = await getRoomsApi();
-        if (!response.ok) return navigate("/");
-        const data = await response.json();
-        setRooms(data);
-      } catch (error) {
-        console.log(error.message);
-      }
-    };
-    fetchRooms();
-  }, []);
-
   const getCurrentUserDetails = (userData) =>
     userData.filter((user) => user.username === username)[0];
 
   const filterCurrentUserName = (userData) =>
     userData.filter((user) => user.username !== username);
 
+  async function getUsers() {
+    const response = await getUsersApi();
+    if (!response.ok) return navigate("/");
+    return response.json();
+  }
+
+  function setAllUsers(userData) {
+    //get get Current user details - @id
+    setCurrentUser(getCurrentUserDetails(userData));
+    setUsers(filterCurrentUserName(userData));
+  }
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await getUsersApi();
-        if (!response.ok) return navigate("/");
-        const userData = await response.json();
-
+        const userData = await getUsers();
         if (userData) {
-          //get get Current user details - @id
-          setCurrentUser(getCurrentUserDetails(userData));
-          setUsers(filterCurrentUserName(userData));
+          setAllUsers(userData);
         } else {
           setUsers([]);
         }
@@ -89,6 +80,26 @@ export default function Profile({ username }) {
   //     },
   //   });
   // };
+
+  const [rooms, setRooms] = useState([]);
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        // const response = await getRoomsApi();
+        const user = getCurrentUserDetails(await getUsers());
+        console.log(user);
+        const response = await getRoomsByUserId(user.id);
+        if (!response.ok) return navigate("/");
+        const data = await response.json();
+        setRooms(data);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchRooms();
+  }, []);
+
   const handleUserClick = (user) => {
     navigate("/chat", {
       state: {
@@ -103,6 +114,7 @@ export default function Profile({ username }) {
     console.log(room);
     navigate("/room", {
       state: {
+        userId: currentUser.id,
         roomId: room.id,
         roomName: room.room_name,
       },

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { addRoomApi } from "../api.js";
+import socket from "../socket.js";
 
 export default function SelectUsers() {
   const location = useLocation();
@@ -29,6 +30,7 @@ export default function SelectUsers() {
     //get roomname - set roomname
     const response = await addRoomApi(roomName, selectedUsers);
     if (!response.ok) return navigate("/");
+    socket.emit("room-create", { roomName, users: selectedUsers });
     return navigate("/profile");
     //get users - set users
     //navigate to profile

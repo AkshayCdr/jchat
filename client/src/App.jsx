@@ -35,7 +35,7 @@ function App() {
 
         <Route path="/chat" element={<Chat username={userName} />} />
         <Route path="/profile" element={<Profile username={userName} />} />
-        <Route path="/room" element={<Room />} />
+        <Route path="/room" element={<Room username={userName} />} />
         <Route path="/selectUsers" element={<SelectUsers />}></Route>
       </Routes>
     </BrowserRouter>
