@@ -43,12 +43,11 @@ export async function loginHandler(req, res) {
 }
 
 export async function logoutHandler(req, res) {
-  try {
-    if (req.user) {
-      await deleteSessionUsingUserId(req.user.id);
-      return res.clearCookie("sessionId").send("cookie cleared");
-    }
+  if (!req.user)
     return res.status(401).json({ message: "Authentication error" });
+  try {
+    await deleteSessionUsingUserId(req.user.id);
+    return res.clearCookie("sessionId").send("cookie cleared");
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

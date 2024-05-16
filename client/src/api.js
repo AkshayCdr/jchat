@@ -79,4 +79,7 @@ export const sendMessageToRoomApi = async (userId, roomId, message) =>
   });
 
 export const getRoomMembers = async (roomId) =>
-  fetch(addr + `:5500/rooms/messages/members/${roomId}`);
+  fetch(addr + `:5500/rooms/messages/members/${roomId}`, {
+    method: "GET",
+    credentials: "include",
+  });

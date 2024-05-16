@@ -32,11 +32,12 @@ export async function getRoomById(req, res) {
 }
 
 export async function setRoom(req, res) {
-  const { roomName } = req.params;
-  const { selectedUsers } = req.body;
+  if (!req.user)
+    return res.status(401).json({ message: "User authentication failed" });
   try {
+    const { roomName } = req.params;
+    const { selectedUsers } = req.body;
     const roomId = await addRooms(roomName);
-    console.log(roomId);
     await addUsersToRoom(selectedUsers, roomId);
     res.status(201).json({ message: "room added succesfully" });
   } catch (error) {
@@ -51,6 +52,8 @@ async function addUsersToRoom(users, roomId) {
 }
 
 export async function getRoomMessages(req, res) {
+  if (!req.user)
+    return res.status(401).json({ message: "User authentication failed" });
   try {
     const { roomId } = req.params;
     const data = await getMessagesByRoom(roomId);
@@ -61,6 +64,8 @@ export async function getRoomMessages(req, res) {
 }
 
 export async function setRoomMessages(req, res) {
+  if (!req.user)
+    return res.status(401).json({ message: "User authentication failed" });
   try {
     const { roomId, userId } = req.params;
     const { message } = req.body;
@@ -72,6 +77,8 @@ export async function setRoomMessages(req, res) {
 }
 
 export async function getRoomMembers(req, res) {
+  if (!req.user)
+    return res.status(401).json({ message: "User authentication failed" });
   try {
     const { roomId } = req.params;
     const data = await getRoomMembersByRoomId(roomId);

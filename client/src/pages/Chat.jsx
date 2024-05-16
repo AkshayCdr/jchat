@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import { useLocation } from "react-router-dom";
@@ -15,6 +15,12 @@ export default function Chat({ username }) {
   const navigate = useNavigate();
 
   const [receiveMessage, setReceive] = useState([]);
+
+  const chatBoxRef = useRef(null);
+
+  useEffect(() => {
+    chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+  }, [message]);
 
   useEffect(() => {
     if (!location.state || !location.state.userId || !location.state.senderId) {
@@ -34,10 +40,23 @@ export default function Chat({ username }) {
     getMessages();
   }, []);
 
-  socket.on("receive-message", (data) => {
-    console.log(data);
-    setReceive([...receiveMessage, ...data]);
-  });
+  // socket.on("receive-message", (data) => {
+  //   console.log(data);
+  //   setReceive([...receiveMessage, ...data]);
+  // });
+
+  useEffect(() => {
+    const handleMessageRoom = (data) => {
+      console.log(data);
+      setReceive((prevMessages) => [...prevMessages, ...data]);
+    };
+
+    socket.on("receive-message", handleMessageRoom);
+
+    return () => {
+      socket.off("receive-message", handleMessageRoom);
+    };
+  }, []);
 
   function onClick(e) {
     e.preventDefault();
@@ -73,7 +92,7 @@ export default function Chat({ username }) {
       <button onClick={returnBack} className="go-back">
         go back
       </button>
-      <div className="chat-box">
+      <div ref={chatBoxRef} className="chat-box">
         {receiveMessage.map((data, index) => (
           <div
             key={index}
